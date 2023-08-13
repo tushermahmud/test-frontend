@@ -7,6 +7,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import Card from '@/components/molecules/card';
 import Images from '@/components/atoms/image';
 import Text from '@/components/atoms/typography';
+import Loader from '@/components/atoms/loader';
 export type Product = {
   id: number;
   title: string;
@@ -20,8 +21,10 @@ export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchMoreData = async () => {
+    setIsLoading(true);
     const res = await axios.get(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=${page === 0 ? 1 : page}&&limit=9`,
     );
@@ -36,6 +39,7 @@ export default function Home() {
       setProducts(res.data.products);
     }
     setPage((prevPage) => prevPage + 1);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -43,11 +47,15 @@ export default function Home() {
   }, []);
 
   const handleRefresh = async () => {
+    setIsLoading(true);
     const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=${1}&&limit=9`);
     setPage(2);
     setProducts(res.data.products);
+    setIsLoading(false);
   };
-  return (
+  return isLoading ? (
+    <Loader />
+  ) : (
     <Flex direction="flex-col" justifyContent="justify-start" classname={'bg-white w-full min-h-screen'}>
       <Fragment>
         <ProductHeader headerText="Books" classname="py-8 w-full" />
