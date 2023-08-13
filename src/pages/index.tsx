@@ -22,7 +22,9 @@ export default function Home() {
   const [hasMore, setHasMore] = useState<boolean>(true);
 
   const fetchMoreData = async () => {
-    const res = await axios.get(`http://localhost:8000/products?page=${page === 0 ? 1 : page}&&limit=9`);
+    const res = await axios.get(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=${page === 0 ? 1 : page}&&limit=9`,
+    );
     if (page > 0) {
       if (!res.data.products.length) {
         setHasMore(false);
@@ -41,7 +43,7 @@ export default function Home() {
   }, []);
 
   const handleRefresh = async () => {
-    const res = await axios.get(`http://localhost:8000/products?limit=9&&page=${1}`);
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/products?page=${1}&&limit=9`);
     setPage(2);
     setProducts(res.data.products);
   };
